@@ -1,0 +1,48 @@
+:root{--bg:#f7f7f5;--card:#fff;--text:#1c1c1a;--muted:#6b6b66;--line:#e2e2dd;--accent:#2b6cb0;--ok:#2f855a;--warn:#b7791f}
+@media (prefers-color-scheme: dark){:root{--bg:#1a1a19;--card:#242422;--text:#ecece8;--muted:#9a9a94;--line:#3a3a37;--accent:#63a4e8;--ok:#68d391;--warn:#f6ad55}}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,sans-serif}
+main{max-width:1200px;margin:0 auto;padding:24px 16px}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:16px;margin:20px 0 8px}
+
+/* Layout em duas colunas */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.col{min-width:0}
+
+/* Coluna da esquerda: altura limitada à tela, com barra vertical dentro do próprio painel */
+.scroll{overflow-y:auto;overflow-x:hidden;max-height:calc(100vh - 32px);padding-right:6px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.sticky{position:sticky;top:16px}
+
+/* Tabelas */
+table{width:100%;border-collapse:collapse}
+td,th{padding:6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
+
+/* Campos e botões */
+input{font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:100%;min-width:0}
+input.num{width:90px}
+input[type=checkbox]{width:auto;margin:0}
+button{font:inherit;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:6px 12px;cursor:pointer}
+
+/* Grade: matérias e dobradinha */
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px 12px}
+.chk{display:flex;flex-direction:column;font-size:14px}
+.chk label{display:flex;align-items:center;gap:6px;cursor:pointer;min-width:0}
+.dob{margin-left:22px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer}
+
+/* Textos e destaques */
+.muted{color:var(--muted);font-size:13px}
+.big{font-size:30px;font-weight:600;color:var(--accent)}
+.ok{color:var(--ok)}
+.warn{color:var(--warn)}
+
+/* Celular: uma coluna só, sem altura fixa */
+@media (max-width:760px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sticky{position:static}
+  .scroll{max-height:none;overflow:visible;padding-right:0}
+}

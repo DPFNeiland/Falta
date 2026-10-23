@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de faltas — TI4A</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>Calculadora de faltas — TI4A</h1>
+<p class="muted">Cadastre as matérias, informe as faltas que você já tem, marque a grade e veja o resultado ao lado. Cada tempo de aula faltado conta como 2 faltas.</p>
+
+<div class="layout">
+
+  <div class="col">
+    <div class="scroll">
+      <div class="card">
+        <h2 style="margin-top:0">1. Template</h2>
+        <label for="template">Escolha uma configuração inicial:</label>
+        <select id="template">
+          <option value="grade-base">Template TI4A — 11 matérias</option>
+          <option value="vazio">Começar do zero</option>
+        </select>
+        <p class="muted">Ao trocar o template, os dados atuais da grade e das matérias serão substituídos.</p>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0">2. Matérias</h2>
+        <table>
+          <thead><tr><th>#</th><th>Nome</th><th>Já faltei (faltas)</th><th>Limite (faltas)</th></tr></thead>
+          <tbody id="materias"></tbody>
+        </table>
+        <p><button id="addMat">+ Adicionar matéria</button></p>
+        <p class="muted">Deixe o limite em branco para não limitar a matéria. As faltas já usadas descontam do limite.</p>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0">3. Grade da semana</h2>
+        <p class="muted">Marque as matérias que acontecem em cada período. Se naquele dia a matéria ocupa 2 tempos seguidos, marque "dobradinha" logo abaixo dela. Períodos sem marcação ficam só com o máximo deles.</p>
+        <table>
+          <thead><tr><th>Dia</th><th>Turno</th><th>Matérias</th></tr></thead>
+          <tbody id="grade"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card sticky">
+      <h2 style="margin-top:0">4. Resultado</h2>
+      <div class="muted">Faltas que ainda podem ser usadas na semana</div>
+      <div class="big" id="total">-</div>
+      <div class="muted" id="totalTempo"></div>
+
+        <h2>Por período</h2>
+      <table>
+        <thead><tr><th>Dia</th><th>Faltas possíveis</th></tr></thead>
+        <tbody id="porDia"></tbody>
+      </table>
+
+      <h2>Por período</h2>
+      <table>
+        <thead><tr><th>Período</th><th>Matéria: faltas</th><th>Total</th></tr></thead>
+        <tbody id="porPeriodo"></tbody>
+      </table>
+
+      <h2>Uso dos limites</h2>
+      <table>
+        <thead><tr><th>Matéria</th><th>Já faltei</th><th>Limite</th><th>Ainda pode</th><th>Planejado</th></tr></thead>
+        <tbody id="usoMat"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
