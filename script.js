@@ -8,6 +8,7 @@ const PERIODOS = [
   {dia:'Segunda', turno:'Tarde', ub:2, sel:[], dob:[]},
   {dia:'Terça',   turno:'Manhã', ub:3, sel:[], dob:[]},
   {dia:'Quarta',  turno:'Manhã', ub:3, sel:[], dob:[]},
+  {dia:'Quarta',  turno:'Tarde', ub:2, sel:[], dob:[]},
   {dia:'Quinta',  turno:'Manhã', ub:3, sel:[], dob:[]},
   {dia:'Quinta',  turno:'Tarde', ub:1, sel:[], dob:[]},
   {dia:'Sexta',   turno:'Manhã', ub:3, sel:[], dob:[]},
@@ -36,25 +37,51 @@ const TEMPLATE_11_PERIODOS = GRADE_BASE.map((p, i) => ({...p,
     ['Análise Preditiva'],
     ['Estatística Multivariada', 'Qualidade de Software', 'Marketing Estratégico'],
     ['Pesquisa Operacional e Cálculo Aplicado', 'Pensamento Experimental e Visão de Futuros', 'Marketing Estratégico'],
+    [],
     ['Estatística Multivariada', 'Programação Backend'],
     ['Pesquisa Operacional e Cálculo Aplicado'],
     ['Projeto Integrado IV', 'Machine Learning', 'Modelagem em construção de software'],
     ['Qualidade de Software'],
   ][i].map(nome => INDICE[nome]),
   dob: [
-    [], ['Análise Preditiva'], [], [], ['Programação Backend'], [], [], []
+    [], ['Análise Preditiva'], [], [], [], ['Programação Backend'], [], [], []
   ][i].map(nome => INDICE[nome]).filter(k => k !== undefined),
 }));
 
-const MATERIAS = Array.from({length: 11}, () => ({nome:'', lim:'', usadas:''}));
+const TEMPLATE_TI2A_MATERIAS = [
+  {nome:'Projeto Integrado', lim:'8', usadas:''},
+  {nome:'Laboratório de Programação', lim:'18', usadas:''},
+  {nome:'Fundamentos de Marketing', lim:'19', usadas:''},
+  {nome:'Programação Web', lim:'19', usadas:''},
+  {nome:'Estatística', lim:'19', usadas:''},
+  {nome:'Engenharia de Software', lim:'19', usadas:''},
+  {nome:'Storytelling', lim:'10', usadas:''},
+  {nome:'Banco de dados', lim:'19', usadas:''},
+  {nome:'UX/UI', lim:'20', usadas:''},
+  {nome:'Colaboração e influência social', lim:'9', usadas:''},
+];
+const INDICE_TI2A = Object.fromEntries(TEMPLATE_TI2A_MATERIAS.map((m, i) => [m.nome, i]));
+const TEMPLATE_TI2A_PERIODOS = GRADE_BASE.map((p, i) => ({...p,
+  sel: [
+    ['Projeto Integrado', 'Laboratório de Programação', 'Fundamentos de Marketing'], [],
+    ['Programação Web', 'Estatística', 'Engenharia de Software'],
+    ['Storytelling', 'Banco de dados', 'Fundamentos de Marketing'], ['UX/UI'],
+    ['Programação Web', 'Estatística', 'Banco de dados'],
+    [], ['Laboratório de Programação', 'Engenharia de Software', 'Colaboração e influência social'], [],
+  ][i].map(nome => INDICE_TI2A[nome]).filter(k => k !== undefined),
+  dob: [[], [], [], [], ['UX/UI'], [], [], [], []][i]
+    .map(nome => INDICE_TI2A[nome]).filter(k => k !== undefined),
+}));
+
+const MATERIAS = [];
 
 function aplicarTemplate(nome){
-  const materias = nome === 'vazio'
-    ? Array.from({length: 11}, () => ({nome:'', lim:'', usadas:''}))
+  const materias = nome === 'ti2a' ? TEMPLATE_TI2A_MATERIAS.map(m => ({...m}))
+    : nome === 'vazio' ? []
     : TEMPLATE_11_MATERIAS.map(m => ({...m}));
-  const periodos = nome === 'vazio'
-    ? GRADE_BASE.map(p => ({...p, sel:[], dob:[]}))
-    : TEMPLATE_11_PERIODOS.map(p => ({...p, sel:p.sel.slice(), dob:p.dob.slice()}));
+  const origem = nome === 'ti2a' ? TEMPLATE_TI2A_PERIODOS
+    : nome === 'vazio' ? GRADE_BASE : TEMPLATE_11_PERIODOS;
+  const periodos = origem.map(p => ({...p, sel:p.sel.slice(), dob:p.dob.slice()}));
   MATERIAS.splice(0, MATERIAS.length, ...materias);
   PERIODOS.splice(0, PERIODOS.length, ...periodos);
   renderMaterias();
