@@ -201,13 +201,17 @@ function calcular(){
   document.getElementById('total').textContent = fmtFaltas(totalTempos);
   document.getElementById('totalTempo').textContent = `${melhorTotal} período(s) completo(s)`;
 
-  document.getElementById('porDia').innerHTML = PERIODOS.map((p, i) => {
+  document.getElementById('porDia').innerHTML = PERIODOS.map((p, i) => ({p, i}))
+    .filter(({p}) => p.sel.length > 0)
+    .map(({p, i}) => {
     const cls = escolhidos[i] > 0 ? 'ok' : 'warn';
     const txt = escolhidos[i] > 0 ? `${escolhidos[i]} vez(es) — ${fmtFaltas(xPer[i])}` : 'não pode faltar';
     return `<tr><td>${p.dia} ${p.turno.toLowerCase()}</td><td class="${cls}">${txt}</td></tr>`;
   }).join('');
 
-  document.getElementById('porPeriodo').innerHTML = PERIODOS.map((p, i) => {
+  document.getElementById('porPeriodo').innerHTML = PERIODOS.map((p, i) => ({p, i}))
+    .filter(({p}) => p.sel.length > 0)
+    .map(({p, i}) => {
     const materias = detalhe[i].length
       ? detalhe[i].map(d => `${esc(rotulo(d.k))}${d.dob ? ' <span class="muted">(dobradinha)</span>' : ''}: ${fmtFaltas(d.v)}`).join('<br>')
       : '<span class="muted">sem matéria marcada</span>';
