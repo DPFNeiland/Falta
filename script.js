@@ -7,6 +7,7 @@ const PERIODOS = [
   {dia:'Segunda', turno:'Manhã', ub:3, sel:[], dob:[]},
   {dia:'Segunda', turno:'Tarde', ub:2, sel:[], dob:[]},
   {dia:'Terça',   turno:'Manhã', ub:3, sel:[], dob:[]},
+  {dia:'Terça',   turno:'Tarde', ub:1, sel:[], dob:[]},
   {dia:'Quarta',  turno:'Manhã', ub:3, sel:[], dob:[]},
   {dia:'Quarta',  turno:'Tarde', ub:2, sel:[], dob:[]},
   {dia:'Quinta',  turno:'Manhã', ub:3, sel:[], dob:[]},
@@ -35,7 +36,7 @@ const TEMPLATE_11_PERIODOS = GRADE_BASE.map((p, i) => ({...p,
   sel: [
     ['Machine Learning', 'Modelagem em construção de software', 'Análise e Solução de Software'],
     ['Análise Preditiva'],
-    ['Estatística Multivariada', 'Qualidade de Software', 'Marketing Estratégico'],
+    ['Estatística Multivariada', 'Qualidade de Software', 'Marketing Estratégico'], [],
     ['Pesquisa Operacional e Cálculo Aplicado', 'Pensamento Experimental e Visão de Futuros', 'Marketing Estratégico'],
     [],
     ['Estatística Multivariada', 'Programação Backend'],
@@ -44,7 +45,7 @@ const TEMPLATE_11_PERIODOS = GRADE_BASE.map((p, i) => ({...p,
     ['Qualidade de Software'],
   ][i].map(nome => INDICE[nome]),
   dob: [
-    [], ['Análise Preditiva'], [], [], [], ['Programação Backend'], [], [], []
+    [], ['Análise Preditiva'], [], [], [], [], ['Programação Backend'], [], [], []
   ][i].map(nome => INDICE[nome]).filter(k => k !== undefined),
 }));
 
@@ -64,22 +65,53 @@ const INDICE_TI2A = Object.fromEntries(TEMPLATE_TI2A_MATERIAS.map((m, i) => [m.n
 const TEMPLATE_TI2A_PERIODOS = GRADE_BASE.map((p, i) => ({...p,
   sel: [
     ['Projeto Integrado', 'Laboratório de Programação', 'Fundamentos de Marketing'], [],
-    ['Programação Web', 'Estatística', 'Engenharia de Software'],
+    ['Programação Web', 'Estatística', 'Engenharia de Software'], [],
     ['Storytelling', 'Banco de dados', 'Fundamentos de Marketing'], ['UX/UI'],
     ['Programação Web', 'Estatística', 'Banco de dados'],
     [], ['Laboratório de Programação', 'Engenharia de Software', 'Colaboração e influência social'], [],
   ][i].map(nome => INDICE_TI2A[nome]).filter(k => k !== undefined),
-  dob: [[], [], [], [], ['UX/UI'], [], [], [], []][i]
+  dob: [[], [], [], [], [], ['UX/UI'], [], [], [], []][i]
     .map(nome => INDICE_TI2A[nome]).filter(k => k !== undefined),
+}));
+
+const TEMPLATE_DIREITO_DR4A_MATERIAS = [
+  {nome:'Responsabilidade Civil', lim:'18', usadas:''},
+  {nome:'Direito, Negócios e Inovação', lim:'8', usadas:''},
+  {nome:'Contabilidade e Finanças I', lim:'8', usadas:''},
+  {nome:'Direito Penal I', lim:'20', usadas:''},
+  {nome:'Direito das Coisas', lim:'10', usadas:''},
+  {nome:'Escritório Padrinho IV', lim:'10', usadas:''},
+  {nome:'Direito Empresarial II', lim:'19', usadas:''},
+  {nome:'Processo Civil I', lim:'19', usadas:''},
+  {nome:'Dados para Tomada de Decisões Jurídicas', lim:'19', usadas:''},
+  {nome:'Análise e Solução de Problemas', lim:'9', usadas:''},
+  {nome:'Direito Administrativo I', lim:'9', usadas:''},
+  {nome:'Metodologia de Pesquisa I', lim:'9', usadas:''},
+  {nome:'Pensamento Experimental e Visão de Futuro', lim:'9', usadas:''},
+];
+const INDICE_DIREITO_DR4A = Object.fromEntries(TEMPLATE_DIREITO_DR4A_MATERIAS.map((m, i) => [m.nome, i]));
+const TEMPLATE_DIREITO_DR4A_PERIODOS = GRADE_BASE.map((p, i) => ({...p,
+  sel: [
+    ['Responsabilidade Civil', 'Direito, Negócios e Inovação', 'Contabilidade e Finanças I'], [],
+    ['Responsabilidade Civil', 'Direito Penal I', 'Direito das Coisas'], ['Escritório Padrinho IV'],
+    ['Direito Empresarial II', 'Direito Penal I', 'Processo Civil I'], [],
+    ['Processo Civil I', 'Direito Empresarial II', 'Dados para Tomada de Decisões Jurídicas'],
+    ['Análise e Solução de Problemas'],
+    ['Direito Administrativo I', 'Metodologia de Pesquisa I', 'Dados para Tomada de Decisões Jurídicas'],
+    ['Pensamento Experimental e Visão de Futuro'],
+  ][i].map(nome => INDICE_DIREITO_DR4A[nome]).filter(k => k !== undefined),
+  dob: [],
 }));
 
 const MATERIAS = [];
 
 function aplicarTemplate(nome){
-  const materias = nome === 'ti2a' ? TEMPLATE_TI2A_MATERIAS.map(m => ({...m}))
+  const materias = nome === 'direito-dr4a' ? TEMPLATE_DIREITO_DR4A_MATERIAS.map(m => ({...m}))
+    : nome === 'ti2a' ? TEMPLATE_TI2A_MATERIAS.map(m => ({...m}))
     : nome === 'vazio' ? []
     : TEMPLATE_11_MATERIAS.map(m => ({...m}));
-  const origem = nome === 'ti2a' ? TEMPLATE_TI2A_PERIODOS
+  const origem = nome === 'direito-dr4a' ? TEMPLATE_DIREITO_DR4A_PERIODOS
+    : nome === 'ti2a' ? TEMPLATE_TI2A_PERIODOS
     : nome === 'vazio' ? GRADE_BASE : TEMPLATE_11_PERIODOS;
   const periodos = origem.map(p => ({...p, sel:p.sel.slice(), dob:p.dob.slice()}));
   MATERIAS.splice(0, MATERIAS.length, ...materias);
