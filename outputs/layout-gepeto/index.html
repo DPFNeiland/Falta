@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6c43dd">
+  <meta name="description" content="Seu saldo de faltas, sem fazer conta de cabeça. Confira suas matérias e simule ausências com o presente?.">
+  <title>presente? — Seu semestre, sem sustos</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#saldo">Pular para meu saldo</a>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="brand" href="#inicio" aria-label="presente? início"><span class="brand-mark" aria-hidden="true">p<span>?</span></span>presente<span class="brand-question">?</span></a>
+      <nav aria-label="Navegação principal">
+        <a href="#saldo">Meu saldo</a>
+        <a href="#simular">Simular</a>
+        <a class="nav-config" href="#configuracao" data-open-config>Turma <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <main id="inicio">
+      <section class="hero" aria-labelledby="titulo">
+        <div>
+          <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span> MENOS CONTA DE CABEÇA</p>
+          <h1 id="titulo">Seu semestre,<br>sem <span class="hero-highlight">sustos.</span></h1>
+          <p class="hero-description">Antes de negociar com o despertador,<br class="desktop-break"> confira suas faltas por aqui.</p>
+          <div class="hero-meta"><span class="class-pill" id="turmaAtual">TI4A</span><span id="saveStatus" role="status">Seus dados ficam neste navegador</span></div>
+        </div>
+        <div class="hero-ticket" aria-label="Regra de cálculo: cada tempo de aula equivale a duas faltas">
+          <span class="ticket-top">LEMBRETE DA CHAMADA</span>
+          <div class="ticket-equation"><span>1<small>tempo de aula</small></span><b aria-hidden="true">=</b><span>2<small>faltas</small></span></div>
+          <span class="ticket-bottom">Dobradinha? Conta em dobro também.</span>
+        </div>
+      </section>
+      <section class="onboarding" id="boasVindas" aria-labelledby="bemVindoTitulo">
+        <span class="onboarding-icon" aria-hidden="true">oi!</span>
+        <div class="onboarding-copy"><h2 id="bemVindoTitulo">A grade está pronta. E as suas faltas?</h2><p>Confira a turma e informe quantas você já tem. Zero também vale, mas precisa ser informado.</p></div>
+        <div class="onboarding-actions"><button class="button button-primary" id="zerarPendentes" type="button">Ainda não faltei</button><button class="button button-quiet" type="button" data-edit-materias>Informar faltas <span aria-hidden="true">↗</span></button></div>
+      </section>
+      <div class="dashboard">
+        <section class="panel balance-panel" id="saldo" aria-labelledby="saldoTitulo">
+          <div class="section-heading"><div><p class="eyebrow">O QUE VOCÊ TEM HOJE</p><h2 id="saldoTitulo">Meu saldo<span class="heading-dot">.</span></h2></div><button class="text-button" type="button" data-edit-materias>Atualizar <span aria-hidden="true">↗</span></button></div>
+          <p class="section-description" id="saldoResumo">As matérias mais próximas do limite aparecem primeiro.</p>
+          <div class="subject-list" id="saldoMaterias"></div>
+          <button class="button button-outline show-all" id="verTodas" type="button" aria-expanded="false" aria-controls="saldoMaterias">Ver todas as matérias</button>
+          <p class="panel-footnote">O saldo é de cada matéria. Faltas de matérias diferentes não se somam.</p>
+        </section>
+        <section class="panel simulation-panel" id="simular" aria-labelledby="simularTitulo">
+          <div class="section-heading"><div><p class="eyebrow">SÓ UM TESTE, SEM MEXER NO SALDO</p><h2 id="simularTitulo">E se eu faltar<span class="heading-dot">?</span></h2></div><span class="simulation-symbol" aria-hidden="true">↗</span></div>
+          <p class="section-description">Toque nos turnos que quer simular. Cada seleção é uma ausência naquele período.</p>
+          <div class="week-grid" id="semanaSimulacao" aria-label="Períodos da grade para simular"></div>
+          <div class="selected-periods" id="periodosSelecionados"></div>
+          <div id="resultadoSimulacao" class="simulation-result" aria-live="polite" aria-atomic="true"></div>
+          <div class="simulation-bottom"><span>Uma mesma matéria pode aparecer em vários dias.</span><button class="text-button" id="limparSimulacao" type="button" hidden>Limpar teste</button></div>
+        </section>
+      </div>
+      <details class="settings" id="configuracao">
+        <summary><span class="settings-number" aria-hidden="true">01</span><span><strong>Sua turma, do seu jeito.</strong><small>Turma, faltas registradas, limites e grade.</small></span><span class="details-icon" aria-hidden="true">+</span></summary>
+        <div class="settings-body">
+          <div class="template-settings">
+            <div><h3>Qual é a sua turma?</h3><p>Os templates trazem a grade e os limites iniciais. Você pode ajustar tudo abaixo.</p></div>
+            <div class="template-controls"><label for="template">Turma</label><div class="input-action"><select id="template"><option value="grade-base">TI4A · 11 matérias</option><option value="ti2a">TI2A · 10 matérias</option><option value="direito-dr4a">Direito DR4A · 13 matérias</option><option value="vazio">Minha própria grade</option></select><button class="button button-primary" id="carregarTemplate" type="button">Carregar</button></div><p class="field-note">Carregar outra turma substitui as matérias e a grade atuais.</p></div>
+          </div>
+          <div class="editor-heading" id="editarMaterias"><div><h3>Matérias e faltas</h3><p>Copie as faltas do seu controle de frequência. Deixe o limite vazio se não quiser definir um teto.</p></div><button class="button button-outline" id="addMat" type="button">+ Adicionar matéria</button></div>
+          <p class="template-note" id="notaTemplate" hidden>Em Responsabilidade Civil, o template usa 18 faltas. A grade fornecida também citava 20; confirme o limite da sua turma.</p>
+          <div class="subject-editors" id="materias"></div>
+          <details class="grade-details"><summary>Conferir ou editar minha grade <span aria-hidden="true">+</span></summary><p class="section-description">Escolha as matérias de cada turno. Marque dobradinha quando a matéria ocupar dois tempos seguidos. Cada tempo equivale a 2 faltas.</p><div class="grade-editor" id="grade"></div></details>
+        </div>
+      </details>
+      <details class="settings automatic" id="planoAutomatico">
+        <summary><span class="settings-number" aria-hidden="true">02</span><span><strong>Quer ver uma combinação possível?</strong><small>Distribua o saldo entre os períodos da sua grade.</small></span><span class="details-icon" aria-hidden="true">+</span></summary>
+        <div class="settings-body"><p class="section-description">O mesmo saldo é compartilhado entre todos os dias. Esta combinação usa apenas os limites informados, sem considerar quantas aulas ainda acontecerão.</p><button class="button button-primary" id="gerarPlano" type="button">Montar uma combinação <span aria-hidden="true">↗</span></button><div id="resultadoPlano" class="automatic-result" aria-live="polite"></div></div>
+      </details>
+      <section class="closing-note"><span aria-hidden="true">✳</span><p>A chamada não aceita arredondamento.<br><strong>Mas seu planejamento pode ser bem mais leve.</strong></p></section>
+    </main>
+    <footer class="site-footer"><a class="footer-brand" href="#inicio">presente?</a><span>Feito para acompanhar o seu semestre.</span><span>Os cálculos usam os dados que você informa.</span></footer>
+  </div>
+  <noscript><p class="noscript-message">Ative o JavaScript para conferir seu saldo e usar o simulador.</p></noscript>
+</body>
+</html>

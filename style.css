@@ -1,48 +1,612 @@
-:root{--bg:#f7f7f5;--card:#fff;--text:#1c1c1a;--muted:#6b6b66;--line:#e2e2dd;--accent:#2b6cb0;--ok:#2f855a;--warn:#b7791f}
-@media (prefers-color-scheme: dark){:root{--bg:#1a1a19;--card:#242422;--text:#ecece8;--muted:#9a9a94;--line:#3a3a37;--accent:#63a4e8;--ok:#68d391;--warn:#f6ad55}}
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&display=swap');
 
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,sans-serif}
-main{max-width:1200px;margin:0 auto;padding:24px 16px}
-h1{font-size:22px;margin:0 0 4px}
-h2{font-size:16px;margin:20px 0 8px}
+/* ==========================================================================
+   Saldo de faltas
+   Paleta e vocabulário vêm da própria chamada: papel sulfite, caneta azul do
+   aluno, caneta vermelha do professor. O medidor não é barra de progresso —
+   é uma fileira de traços, um por falta, do jeito que a lista é preenchida.
+   ========================================================================== */
 
-/* Layout em duas colunas */
-.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
-.col{min-width:0}
+/* --- Tokens --------------------------------------------------------------- */
+:root {
+  color-scheme: light dark;
 
-/* Coluna da esquerda: altura limitada à tela, com barra vertical dentro do próprio painel */
-.scroll{overflow-y:auto;overflow-x:hidden;max-height:calc(100vh - 32px);padding-right:6px}
+  /* Cor */
+  --papel:          #fcfcfa;
+  --papel-fundo:    #f1f1ec;
+  --superficie:     #ffffff;
+  --tinta:          #141a2e;
+  --tinta-fraca:    #5b6478;
+  --linha:          #e2e2dd;
+  --linha-forte:    #c9cac3;
 
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
-.sticky{position:sticky;top:16px}
+  --caneta:         #2b4fd8;
+  --caneta-fundo:   #e7ecfd;
+  --vermelho:       #bd352b;
+  --vermelho-fundo: #fbeae8;
+  --ambar:          #8e5d08;
+  --ambar-fundo:    #fbf0da;
+  --verde:          #1d6b4c;
 
-/* Tabelas */
-table{width:100%;border-collapse:collapse}
-td,th{padding:6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-th{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
+  /* Escala de risco: quatro degraus, de "não cabe mais" a "tem folga".
+     Matizes bem separados, porque laranja ao lado de âmbar não se distingue. */
+  --risco-0: #bd352b;  --risco-0-fundo: #fbeae8;   /* não cabe mais */
+  --risco-1: #a34508;  --risco-1-fundo: #fdeee1;   /* cabe só mais uma */
+  --risco-2: #7a6005;  --risco-2-fundo: #fbf4da;   /* cabem 2 ou 3 */
+  --risco-3: #1d6b4c;  --risco-3-fundo: #e8f4ed;   /* cabem 4 ou mais */
 
-/* Campos e botões */
-input{font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:100%;min-width:0}
-input.num{width:90px}
-input[type=checkbox]{width:auto;margin:0}
-button{font:inherit;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:6px 12px;cursor:pointer}
+  /* Tipografia: escala modular de terça maior (1,25) a partir de 16px */
+  --t-micro: 0.8125rem;  /* 13 */
+  --t-base:  1rem;       /* 16 */
+  --t-lead:  1.25rem;    /* 20 */
+  --t-sec:   1.5625rem;  /* 25 */
+  --t-alta:  1.953rem;   /* 31 */
+  --t-num:   2.441rem;   /* 39 */
+  --t-tit:   3.052rem;   /* 49 */
 
-/* Grade: matérias e dobradinha */
-.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px 12px}
-.chk{display:flex;flex-direction:column;font-size:14px}
-.chk label{display:flex;align-items:center;gap:6px;cursor:pointer;min-width:0}
-.dob{margin-left:22px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer}
+  --fonte: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-/* Textos e destaques */
-.muted{color:var(--muted);font-size:13px}
-.big{font-size:30px;font-weight:600;color:var(--accent)}
-.ok{color:var(--ok)}
-.warn{color:var(--warn)}
+  /* Espaço e forma */
+  --gutter: 1.25rem;
+  --largura: 68rem;
+  --r-pequeno: 4px;
+  --r-medio: 8px;
+}
 
-/* Celular: uma coluna só, sem altura fixa */
-@media (max-width:760px){
-  .layout{grid-template-columns:minmax(0,1fr)}
-  .sticky{position:static}
-  .scroll{max-height:none;overflow:visible;padding-right:0}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --papel:          #12141a;
+    --papel-fundo:    #0c0e13;
+    --superficie:     #1a1e27;
+    --tinta:          #e9eaee;
+    --tinta-fraca:    #9ba2b2;
+    --linha:          #2b303b;
+    --linha-forte:    #3c4354;
+
+    --caneta:         #87a2ff;
+    --caneta-fundo:   #1d2640;
+    --vermelho:       #ff897e;
+    --vermelho-fundo: #33201e;
+    --ambar:          #e5b15c;
+    --ambar-fundo:    #2e2614;
+    --verde:          #63c79c;
+
+    --risco-0: #ff897e;  --risco-0-fundo: #33201e;
+    --risco-1: #f5a65f;  --risco-1-fundo: #31220f;
+    --risco-2: #d9c25c;  --risco-2-fundo: #2b2712;
+    --risco-3: #63c79c;  --risco-3-fundo: #15291f;
+  }
+}
+
+/* --- Base ----------------------------------------------------------------- */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font: 400 var(--t-base)/1.55 var(--fonte);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { margin: 0; line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
+p { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; }
+button:disabled { cursor: default; opacity: 0.45; }
+a { color: inherit; }
+[hidden] { display: none !important; }
+
+:focus-visible {
+  outline: 2px solid var(--caneta);
+  outline-offset: 3px;
+  border-radius: var(--r-pequeno);
+}
+
+.pular {
+  position: absolute; left: 0.75rem; top: -4rem; z-index: 10;
+  background: var(--caneta); color: var(--papel);
+  padding: 0.6rem 0.9rem; border-radius: var(--r-medio);
+}
+.pular:focus { top: 0.75rem; }
+
+.sub {
+  color: var(--tinta-fraca);
+  max-width: 54ch;
+}
+
+.nota {
+  font-size: var(--t-micro);
+  color: var(--ambar);
+  background: var(--ambar-fundo);
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--r-medio);
+  max-width: 54ch;
+}
+
+/* --- Botões --------------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 2.75rem; padding: 0.5rem 1rem;
+  border: 1px solid transparent; border-radius: var(--r-medio);
+  font-size: var(--t-micro); font-weight: 600;
+  transition: background-color 0.12s, border-color 0.12s;
+}
+.btn-forte { background: var(--caneta); color: var(--papel); }
+.btn-forte:hover { background: color-mix(in srgb, var(--caneta) 85%, #000); }
+.btn-discreto { border-color: var(--linha-forte); }
+.btn-discreto:hover { background: var(--caneta-fundo); border-color: var(--caneta); }
+.btn-texto { padding: 0.5rem 0; color: var(--caneta); text-decoration: underline; text-underline-offset: 4px; }
+
+/* --- Topo ----------------------------------------------------------------- */
+/* No celular o topo rola junto: grudado, ele comeria meia tela. */
+.topo {
+  background: color-mix(in srgb, var(--papel) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--linha);
+}
+.topo-interno {
+  max-width: var(--largura); margin: 0 auto;
+  padding: 0.7rem var(--gutter);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+}
+.marca {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-weight: 800; font-size: var(--t-base); letter-spacing: -0.03em;
+  text-decoration: none;
+}
+/* O selo é um pedaço de chamada: quatro traços, dois preenchidos. */
+.marca-selo {
+  width: 18px; height: 16px; border-radius: 2px;
+  background:
+    linear-gradient(var(--caneta) 0 0) 0 0 / 3px 100% no-repeat,
+    linear-gradient(var(--caneta) 0 0) 5px 0 / 3px 100% no-repeat,
+    linear-gradient(var(--linha-forte) 0 0) 10px 0 / 3px 100% no-repeat,
+    linear-gradient(var(--linha-forte) 0 0) 15px 0 / 3px 100% no-repeat;
+}
+.topo-estado { font-size: var(--t-micro); color: var(--tinta-fraca); text-align: right; }
+.topo-estado b { color: var(--tinta); font-weight: 600; }
+
+select, input[type="number"], input[type="text"] {
+  background: var(--superficie);
+  border: 1px solid var(--linha-forte);
+  border-radius: var(--r-medio);
+  padding: 0.45rem 0.6rem;
+  min-height: 2.5rem;
+  min-width: 0; max-width: 100%;
+  font-size: var(--t-micro);
+}
+select { cursor: pointer; }
+/* As setinhas do input number roubam a largura do número. */
+input[type="number"] { appearance: textfield; -moz-appearance: textfield; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[aria-invalid="true"] { border-color: var(--vermelho); background: var(--vermelho-fundo); }
+
+/* --- Seção 1: posso faltar ------------------------------------------------ */
+main { max-width: var(--largura); margin: 0 auto; padding: 0 var(--gutter); }
+
+.abertura { padding: 2.5rem 0 1.5rem; }
+.abertura h1 { font-size: var(--t-alta); }
+.abertura .sub { margin-top: 0.6rem; font-size: var(--t-micro); }
+
+/* Aqui a numeração é honesta: o conteúdo é mesmo uma sequência, e o passo 3
+   não responde nada enquanto os dois primeiros não estiverem preenchidos. */
+.passos { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.passo { padding: 2rem 0; border-top: 1px solid var(--linha); }
+.passo-cabeca { display: flex; align-items: flex-start; gap: 0.9rem; }
+.passo-num {
+  flex-shrink: 0;
+  width: 1.75rem; height: 1.75rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--tinta); color: var(--papel);
+  font-size: var(--t-micro); font-weight: 600;
+}
+.passo[data-pronto="sim"] .passo-num { background: var(--caneta); }
+.passo-cabeca h2 { font-size: var(--t-sec); }
+.passo-cabeca .sub { margin-top: 0.4rem; font-size: var(--t-micro); }
+.passo-corpo { margin-top: 1.5rem; margin-left: 2.65rem; display: grid; gap: 1rem; justify-items: start; }
+.passo-corpo > * { max-width: 100%; }
+
+.turma-escolha { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.turma-escolha label { font-size: var(--t-micro); color: var(--tinta-fraca); }
+.nota-fraca { font-size: 0.75rem; color: var(--tinta-fraca); }
+
+.resposta { width: 100%; display: grid; gap: 1.25rem; }
+
+/* A trilha: escolher o tamanho do pedaço, e ler o que a cor significa. */
+.trilha { display: grid; gap: 0.9rem; align-content: start; }
+
+.gran-caixa { margin: 0; padding: 0; border: 0; min-width: 0; }
+.gran-caixa legend {
+  padding: 0; margin-bottom: 0.5rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--tinta-fraca);
+}
+#granularidade { display: grid; gap: 0.35rem; }
+.opcao-gran input {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); border: 0;
+}
+.opcao-gran label {
+  display: grid; gap: 0.1rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--linha-forte); border-radius: var(--r-medio);
+  background: var(--superficie);
+  cursor: pointer;
+}
+.opcao-gran label strong { font-size: var(--t-micro); font-weight: 600; }
+.opcao-gran label small { font-size: 0.75rem; color: var(--tinta-fraca); line-height: 1.3; }
+.opcao-gran label:hover { border-color: var(--caneta); }
+.opcao-gran input:checked + label {
+  border-color: var(--caneta); background: var(--caneta-fundo);
+  box-shadow: inset 2px 0 0 var(--caneta);
+}
+.opcao-gran input:focus-visible + label { outline: 2px solid var(--caneta); outline-offset: 2px; }
+
+.legenda-caixa { display: grid; gap: 0.4rem; }
+.legenda-titulo { font-size: 0.75rem; font-weight: 600; color: var(--tinta-fraca); }
+.legenda { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+.legenda li { display: flex; align-items: center; gap: 0.45rem; font-size: 0.75rem; color: var(--tinta-fraca); }
+.amostra { width: 0.9rem; height: 0.9rem; border-radius: 3px; flex-shrink: 0; }
+.amostra[data-risco="estourado"] { background: var(--risco-0); }
+.amostra[data-risco="critico"]   { background: var(--risco-1); }
+.amostra[data-risco="atencao"]   { background: var(--risco-2); }
+.amostra[data-risco="folgado"]   { background: var(--risco-3); }
+
+.semana-area { min-width: 0; }
+.dia-unidades { display: grid; gap: 0.4rem; min-width: 0; }
+.faixa-turno {
+  font-size: 0.7rem; font-weight: 600; color: var(--tinta-fraca);
+  padding-top: 0.25rem;
+}
+.aula-materia {
+  font-size: 0.7rem; line-height: 1.25; color: var(--tinta-fraca);
+  overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+}
+
+
+.semana { display: grid; gap: 0.5rem; }
+
+/* Celular: um dia por linha, rótulo à esquerda. */
+.dia {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  align-items: start;
+  /* Sem isto as linhas 'auto' esticam para preencher a coluna mais alta e cada
+     dia começa numa altura diferente. */
+  align-content: start;
+  gap: 0.4rem;
+}
+/* Manhã e tarde cabem lado a lado; dia todo e tempo por tempo empilham. */
+.semana[data-gran="turno"] .dia-unidades { grid-template-columns: 1fr 1fr; }
+.dia-nome {
+  display: flex; align-items: center;
+  font-size: var(--t-micro); font-weight: 600; color: var(--tinta-fraca);
+}
+
+.aula, .aula-vazia {
+  display: flex; flex-direction: column; justify-content: center; gap: 0.1rem;
+  min-height: 4.25rem; padding: 0.5rem 0.6rem;
+  border: 1px solid var(--linha-forte); border-radius: var(--r-medio);
+  background: var(--superficie);
+  text-align: left;
+}
+.aula-turno { font-size: 0.75rem; font-weight: 600; color: var(--tinta-fraca); }
+.aula-num {
+  font-size: var(--t-lead); font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
+}
+.aula-rodape { font-size: 0.75rem; color: var(--tinta-fraca); line-height: 1.25; }
+.aula-vazia small { font-size: 0.75rem; color: var(--tinta-fraca); }
+
+.aula:hover { border-color: var(--caneta); background: var(--caneta-fundo); }
+/* O risco pinta a borda esquerda e o número. Nunca só a cor: o número e o
+   rótulo embaixo dizem a mesma coisa em palavras. */
+.aula[data-risco="estourado"] { border-left: 3px solid var(--risco-0); background: var(--risco-0-fundo); }
+.aula[data-risco="critico"]   { border-left: 3px solid var(--risco-1); background: var(--risco-1-fundo); }
+.aula[data-risco="atencao"]   { border-left: 3px solid var(--risco-2); background: var(--risco-2-fundo); }
+.aula[data-risco="folgado"]   { border-left: 3px solid var(--risco-3); background: var(--risco-3-fundo); }
+.aula[data-risco="estourado"] .aula-num { color: var(--risco-0); }
+.aula[data-risco="critico"]   .aula-num { color: var(--risco-1); }
+.aula[data-risco="atencao"]   .aula-num { color: var(--risco-2); }
+.aula[data-risco="folgado"]   .aula-num { color: var(--risco-3); }
+.aula[data-risco="pendente"] .aula-num { color: var(--tinta-fraca); }
+
+.aula[aria-pressed="true"] {
+  background: var(--caneta); border-color: var(--caneta); color: var(--papel);
+}
+.aula[aria-pressed="true"] .aula-turno,
+.aula[aria-pressed="true"] .aula-rodape { color: color-mix(in srgb, var(--papel) 78%, var(--caneta)); }
+.aula[aria-pressed="true"] .aula-num { color: var(--papel); }
+
+.aula-vazia {
+  background: transparent; border-style: dashed; border-color: var(--linha);
+  color: var(--tinta-fraca);
+}
+
+.selecionados:not(:empty) { display: grid; gap: 0.35rem; margin-top: 0.75rem; }
+.selecionado small { display: block; font-size: 0.7rem; color: var(--tinta-fraca); margin-top: 0.1rem; }
+.selecionado {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  padding: 0.4rem 0.6rem; border-radius: var(--r-medio);
+  background: var(--caneta-fundo);
+  font-size: var(--t-micro);
+}
+.contador { display: flex; align-items: center; gap: 0.5rem; }
+.contador button {
+  width: 2rem; height: 2rem; border-radius: var(--r-pequeno);
+  border: 1px solid var(--linha-forte); background: var(--superficie);
+  color: var(--caneta); font-weight: 600; line-height: 1;
+}
+.contador span { min-width: 2.25rem; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.semana-rodape {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+  font-size: var(--t-micro); color: var(--tinta-fraca);
+}
+
+/* O veredito: a resposta da pergunta do título. */
+.veredito {
+  border: 1px solid var(--linha-forte);
+  border-left: 4px solid var(--linha-forte);
+  border-radius: var(--r-medio);
+  background: var(--superficie);
+  padding: 1.1rem 1.2rem;
+}
+.veredito[data-estado="vazio"] { border-left-color: var(--linha-forte); }
+.veredito[data-estado="ok"] { border-left-color: var(--verde); }
+.veredito[data-estado="atencao"] { border-left-color: var(--ambar); background: var(--ambar-fundo); }
+.veredito[data-estado="estouro"] { border-left-color: var(--vermelho); background: var(--vermelho-fundo); }
+
+.veredito h2 { font-size: var(--t-lead); letter-spacing: -0.025em; }
+.veredito-nota { margin-top: 0.4rem; font-size: var(--t-micro); color: var(--tinta-fraca); }
+.veredito[data-estado="atencao"] .veredito-nota,
+.veredito[data-estado="estouro"] .veredito-nota { color: inherit; opacity: 0.8; }
+
+/* Nome em cima, conta embaixo: nome comprido não desalinha o veredito. */
+.efeito {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.1rem 0.75rem;
+  padding: 0.6rem 0;
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  font-size: var(--t-micro);
+}
+.efeito:first-of-type { margin-top: 0.9rem; }
+.efeito-materia { grid-column: 1 / -1; font-weight: 600; }
+.efeito-veredito { grid-column: 2; text-align: right; white-space: nowrap; }
+.efeito-conta { font-variant-numeric: tabular-nums; color: var(--tinta-fraca); }
+.veredito[data-estado="atencao"] .efeito-conta,
+.veredito[data-estado="estouro"] .efeito-conta { color: inherit; opacity: 0.75; }
+.efeito-veredito { font-weight: 600; }
+.efeito-veredito.ruim { color: var(--vermelho); }
+
+/* --- Seção 2: o saldo (que também é o editor) ----------------------------- */
+.saldo-aperto { font-size: var(--t-micro); color: var(--tinta-fraca); }
+.saldo-aperto strong { color: var(--vermelho); font-weight: 600; }
+
+.ledger-cabecalho { display: none; }
+
+.ledger { width: 100%; max-width: 50rem; }
+
+.ledger-linha {
+  display: grid;
+  gap: 0.5rem 0.75rem;
+  /* No celular o nome ganha a linha inteira — matéria de nome comprido é regra,
+     não exceção, e cortar "Modelagem em construçã" não ajuda ninguém. */
+  grid-template-columns: minmax(0, 1fr) 5rem;
+  grid-template-areas:
+    "nome   nome"
+    "campos cabe"
+    "tracos remover";
+  align-items: center;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--linha);
+}
+.linha-nome { grid-area: nome; min-width: 0; }
+.linha-nome input {
+  width: 100%; border: 0; background: transparent; padding: 0;
+  font-size: var(--t-base); font-weight: 600; min-height: 1.6rem;
+}
+.linha-nome input::placeholder { color: var(--tinta-fraca); font-weight: 400; }
+
+.linha-campos { grid-area: campos; display: flex; align-items: center; gap: 0.4rem; font-size: var(--t-micro); color: var(--tinta-fraca); }
+.linha-campos input {
+  width: 3.5rem; text-align: center; padding-inline: 0.35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.linha-cabe { grid-area: cabe; text-align: right; }
+.linha-cabe b {
+  display: block;
+  font-size: var(--t-num); font-weight: 800; line-height: 1;
+  letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+}
+.linha-cabe span { display: block; margin-top: 0.25rem; font-size: 0.75rem; color: var(--tinta-fraca); }
+
+/* Os traços da chamada: um por falta permitida. */
+.tracos { grid-area: tracos; display: flex; flex-wrap: wrap; gap: 2px; }
+.tracos i { width: 3px; height: 15px; border-radius: 1px; background: var(--linha-forte); }
+.tracos i.usada { background: var(--caneta); }
+.tracos i.estouro { background: var(--vermelho); }
+.barra { grid-area: tracos; height: 5px; border-radius: 3px; background: var(--linha); overflow: hidden; }
+.barra span { display: block; height: 100%; background: var(--caneta); }
+
+.ledger-linha[data-estado="apertado"] .linha-cabe b { color: var(--ambar); }
+.ledger-linha[data-estado="estourado"] .linha-cabe b { color: var(--vermelho); }
+.ledger-linha[data-estado="pendente"] .linha-cabe b { color: var(--tinta-fraca); font-size: var(--t-lead); }
+.ledger-linha[data-estado="pendente"] .tracos i { background: var(--linha); }
+
+.linha-remover {
+  grid-area: remover; justify-self: end; align-self: center;
+  width: 1.75rem; height: 1.75rem; border-radius: var(--r-pequeno);
+  font-size: var(--t-base); line-height: 1; color: var(--tinta-fraca);
+}
+.linha-remover:hover { color: var(--vermelho); background: var(--vermelho-fundo); }
+.linha-erro { grid-column: 1 / -1; font-size: 0.75rem; color: var(--vermelho); }
+
+.ledger-vazio {
+  padding: 2rem 0; display: grid; gap: 0.75rem; justify-items: start;
+  color: var(--tinta-fraca); font-size: var(--t-micro);
+}
+
+
+/* Primeiro uso: a chamada da pessoa ainda está em branco. */
+.primeiro-uso {
+  width: 100%; padding: 1rem 1.1rem;
+  border: 1px dashed var(--caneta); border-radius: var(--r-medio);
+  background: var(--caneta-fundo);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+  font-size: var(--t-micro);
+}
+
+/* --- Seção 3: ajustes ----------------------------------------------------- */
+.bloco { width: 100%; border: 1px solid var(--linha); border-radius: var(--r-medio); background: var(--superficie); }
+.bloco > summary {
+  display: grid; gap: 0.2rem;
+  padding: 1rem 1.1rem; cursor: pointer; list-style: none;
+}
+.bloco > summary::-webkit-details-marker { display: none; }
+.bloco > summary::after {
+  content: 'Abrir';
+  grid-row: 1 / 3; grid-column: 2;
+  align-self: center;
+  font-size: var(--t-micro); color: var(--caneta); font-weight: 600;
+}
+.bloco[open] > summary::after { content: 'Fechar'; }
+.bloco > summary { grid-template-columns: minmax(0, 1fr) auto; }
+.bloco-titulo { font-weight: 600; }
+.bloco-sub { font-size: var(--t-micro); color: var(--tinta-fraca); }
+.bloco-corpo { padding: 0 1.1rem 1.2rem; display: grid; gap: 1rem; justify-items: start; }
+.bloco-corpo .sub { font-size: var(--t-micro); }
+
+.grade-editor { display: grid; gap: 0.5rem; width: 100%; }
+.turno {
+  border: 1px solid var(--linha); border-radius: var(--r-medio); padding: 0.8rem 0.9rem;
+}
+.turno > summary {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; cursor: pointer; list-style: none; font-size: var(--t-micro); font-weight: 600;
+}
+.turno > summary::-webkit-details-marker { display: none; }
+.turno > summary small { font-weight: 400; color: var(--tinta-fraca); text-align: right; }
+.ordem { margin-top: 1rem; padding: 0.75rem 0.85rem; background: var(--papel-fundo); border-radius: var(--r-medio); }
+.ordem-titulo { font-size: 0.75rem; font-weight: 600; color: var(--tinta-fraca); margin-bottom: 0.5rem; }
+.ordem-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+.ordem-lista li { display: flex; align-items: center; gap: 0.6rem; font-size: var(--t-micro); }
+.ordem-num {
+  flex-shrink: 0; min-width: 3.5rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--caneta); font-variant-numeric: tabular-nums;
+}
+.ordem-nome { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ordem-botoes { display: flex; gap: 0.25rem; flex-shrink: 0; }
+.mover {
+  width: 2rem; height: 2rem; border-radius: var(--r-pequeno);
+  border: 1px solid var(--linha-forte); background: var(--superficie); color: var(--caneta);
+  line-height: 1;
+}
+.mover:hover:not(:disabled) { background: var(--caneta-fundo); border-color: var(--caneta); }
+
+.marcacoes { display: grid; gap: 0.8rem; margin-top: 1rem; }
+.marcacao label { display: flex; align-items: flex-start; gap: 0.5rem; font-size: var(--t-micro); cursor: pointer; }
+.marcacao input[type="checkbox"] { width: 1.1rem; height: 1.1rem; margin: 0.15rem 0 0; accent-color: var(--caneta); flex-shrink: 0; }
+.marcacao .dobradinha { margin-left: 1.6rem; margin-top: 0.4rem; color: var(--tinta-fraca); }
+
+.plano-resultado:not(:empty) { margin-top: 0.5rem; width: 100%; }
+.plano-total { font-size: var(--t-sec); font-weight: 800; letter-spacing: -0.03em; }
+.plano-aviso { font-size: var(--t-micro); color: var(--tinta-fraca); max-width: 60ch; margin-top: 0.3rem; }
+.plano-tabela { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: var(--t-micro); }
+.plano-tabela th {
+  text-align: left; font-weight: 500; color: var(--tinta-fraca);
+  border-bottom: 1px solid var(--linha-forte); padding: 0.5rem 0.4rem;
+}
+.plano-tabela td { border-bottom: 1px solid var(--linha); padding: 0.7rem 0.4rem; vertical-align: top; }
+.plano-tabela td:last-child { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.plano-tabela small { display: block; color: var(--tinta-fraca); margin-top: 0.25rem; }
+
+/* --- Rodapé --------------------------------------------------------------- */
+.rodape {
+  max-width: var(--largura); margin: 0 auto;
+  padding: 1.75rem var(--gutter) 3rem;
+  border-top: 1px solid var(--linha);
+  display: grid; gap: 0.6rem;
+  font-size: var(--t-micro); color: var(--tinta-fraca);
+}
+.rodape p { max-width: 70ch; }
+.rodape strong { color: var(--tinta); font-weight: 600; }
+
+.noscript { padding: 1.5rem var(--gutter); background: var(--ambar-fundo); color: var(--ambar); }
+
+/* --- Telas maiores -------------------------------------------------------- */
+@media (min-width: 46rem) {
+  :root { --gutter: 2rem; }
+
+  .topo { position: sticky; top: 0; z-index: 5; }
+  .abertura h1 { font-size: var(--t-tit); }
+  .abertura .sub { font-size: var(--t-base); }
+
+  /* A semana vira grade de verdade: cinco dias, manhã sobre tarde. */
+  .semana { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem; }
+  .dia { grid-template-columns: none; grid-auto-rows: auto; gap: 0.4rem; }
+  .semana[data-gran="turno"] .dia-unidades { grid-template-columns: 1fr; }
+  /* Linha desalinhada numa grade de horário mente: parece que a tarde de um
+     dia começa noutra hora. Altura igual entre as colunas resolve. */
+  .semana[data-gran="tempo"] .aula { min-height: 7.5rem; justify-content: flex-start; }
+  .semana[data-gran="tempo"] .aula-materia { min-height: 2.6em; }
+  .semana[data-gran="tempo"] .aula-num { margin-top: auto; }
+  .dia-nome { justify-content: center; }
+  .aula, .aula-vazia { min-height: 5.25rem; text-align: center; align-items: center; }
+
+  .ledger-cabecalho {
+    display: grid; width: 100%; margin-top: 0.5rem;
+    grid-template-columns: minmax(0, 1fr) 11rem 6rem 1.75rem;
+    gap: 0.75rem;
+    max-width: 50rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--linha-forte);
+    font-size: 0.75rem; color: var(--tinta-fraca);
+  }
+  .ledger-cabecalho span:nth-child(3) { text-align: right; }
+
+  .ledger-linha {
+    grid-template-columns: minmax(0, 1fr) 11rem 6rem 1.75rem;
+    grid-template-areas:
+      "nome   campos cabe remover"
+      "tracos tracos cabe remover";
+  }
+  .linha-campos { justify-content: flex-start; }
+}
+
+@media (min-width: 62rem) {
+  /* A pergunta e a resposta lado a lado: você vê o efeito sem rolar. */
+  /* Trilha, semana e leitura lado a lado: escolher, olhar e entender sem rolar. */
+  .resposta {
+    grid-template-columns: 11rem minmax(0, 1.5fr) minmax(16rem, 1fr);
+    align-items: start;
+    column-gap: 1.5rem;
+  }
+  .veredito { position: sticky; top: 5rem; }
+  .trilha { position: sticky; top: 5rem; }
+}
+
+/* Sem espaço para coluna lateral, a trilha vira uma fileira no topo. */
+@media (max-width: 61.99rem) {
+  #granularidade { grid-auto-flow: column; grid-auto-columns: 1fr; }
+  .legenda { grid-auto-flow: column; grid-auto-columns: max-content; gap: 0.3rem 0.9rem; }
+}
+
+@media (max-width: 34rem) {
+  .opcao-gran label { padding: 0.55rem 0.5rem; text-align: center; }
+  .opcao-gran label small { display: none; }
+  .legenda { grid-auto-flow: row; grid-template-columns: 1fr 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
 }
