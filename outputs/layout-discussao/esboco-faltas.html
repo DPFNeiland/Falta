@@ -1,0 +1,103 @@
+<div id="esboco-faltas-espm" class="viz-dotted-background">
+  <style>
+    #esboco-faltas-espm { padding:24px 0; color-scheme:light dark; }
+    #esboco-faltas-espm .ef-app { --ef-paper:light-dark(#faf9f6,#1d1c1b); --ef-card:light-dark(#ffffff,#272624); --ef-text:light-dark(#242320,#f2efea); --ef-muted:light-dark(#67645f,#bab5ad); --ef-line:light-dark(#dedbd5,#49463f); --ef-accent:light-dark(#683bdd,#c1a6ff); --ef-soft:light-dark(#eee8ff,#383046); --ef-alert:light-dark(#ad3827,#ffab97); --ef-alert-bg:light-dark(#fff0e8,#432b24); max-width:420px; margin:0 auto; padding:22px; border:1px solid var(--ef-line); border-radius:24px; background:var(--ef-paper); color:var(--ef-text); font:15px/1.45 system-ui,sans-serif; }
+    #esboco-faltas-espm .ef-top { display:flex; justify-content:space-between; align-items:start; gap:16px; }
+    #esboco-faltas-espm .ef-brand { font-weight:750; letter-spacing:-.4px; font-size:24px; }
+    #esboco-faltas-espm .ef-small { color:var(--ef-muted); font-size:12px; }
+    #esboco-faltas-espm .ef-heading { margin:0; font-size:20px; font-weight:700; letter-spacing:-.4px; }
+    #esboco-faltas-espm .ef-intro { color:var(--ef-muted); margin:8px 0 0; font-size:14px; }
+    #esboco-faltas-espm .ef-blocks { display:flex; flex-direction:column; gap:22px; margin-top:24px; }
+    #esboco-faltas-espm .ef-saldo { background:var(--ef-card); padding:16px; border:1px solid var(--ef-line); border-radius:16px; }
+    #esboco-faltas-espm .ef-row { display:flex; justify-content:space-between; align-items:center; gap:12px; padding-top:12px; }
+    #esboco-faltas-espm .ef-count { font-variant-numeric:tabular-nums; font-size:24px; font-weight:700; }
+    #esboco-faltas-espm .ef-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+    #esboco-faltas-espm .ef-choice { text-align:left; border:1px solid var(--ef-line); border-radius:12px; padding:12px; min-height:60px; font:inherit; background:var(--ef-card); color:var(--ef-text); cursor:pointer; }
+    #esboco-faltas-espm .ef-choice[aria-pressed="true"] { border-color:var(--ef-accent); background:var(--ef-soft); }
+    #esboco-faltas-espm .ef-choice span { display:block; font-size:12px; color:var(--ef-muted); }
+    #esboco-faltas-espm .ef-result { margin-top:14px; padding:14px; border-radius:12px; background:var(--ef-soft); }
+    #esboco-faltas-espm .ef-result[data-excede="true"] { background:var(--ef-alert-bg); }
+    #esboco-faltas-espm .ef-result h4 { margin:0; font-size:16px; }
+    #esboco-faltas-espm .ef-effect { padding-top:10px; font-size:13px; }
+    #esboco-faltas-espm .ef-effect strong { display:block; font-variant-numeric:tabular-nums; }
+    #esboco-faltas-espm .ef-danger { color:var(--ef-alert); }
+    #esboco-faltas-espm .ef-foot { border-top:1px solid var(--ef-line); padding-top:16px; color:var(--ef-muted); font-size:12px; }
+    #esboco-faltas-espm .ef-tag { color:var(--ef-accent); font-size:12px; font-weight:650; }
+    #esboco-faltas-espm .ef-note { margin:10px 0 0; color:var(--ef-muted); font-size:12px; }
+    @media(max-width:380px) { #esboco-faltas-espm .ef-app { padding:16px; border-radius:16px; } }
+  </style>
+  <section class="ef-app" aria-label="Proposta de tela para o aluno">
+    <div class="ef-top">
+      <div><div class="ef-small">CONCEITO · DADOS DE EXEMPLO</div><div class="ef-brand">Meu semestre</div></div>
+      <div class="ef-tag">Direito<br>DR4A</div>
+    </div>
+    <p class="ef-intro" data-tom>Seu saldo, sem fazer conta de cabeça.</p>
+    <div class="ef-blocks">
+      <section class="ef-saldo" data-saldo aria-label="Saldo das matérias mais próximas do limite">
+        <h3 class="ef-heading">De olho nessas duas</h3>
+        <div class="ef-row"><div>Direito Penal I<div class="ef-small">18 de 20 faltas usadas</div></div><div><span class="ef-count">2</span><span class="ef-small"> de saldo</span></div></div>
+        <div class="ef-row"><div>Responsabilidade Civil<div class="ef-small">16 de 18 faltas usadas</div></div><div><span class="ef-count">2</span><span class="ef-small"> de saldo</span></div></div>
+      </section>
+      <section data-simulador aria-label="Simular ausências com os dados de exemplo">
+        <h3 class="ef-heading">E se eu faltar?</h3>
+        <div class="ef-small">Selecione um ou os dois períodos do exemplo.</div>
+        <div class="ef-grid">
+          <button type="button" class="ef-choice" data-dia="ter" aria-pressed="true">Terça<span>Manhã · 3 matérias</span></button>
+          <button type="button" class="ef-choice" data-dia="qua" aria-pressed="false">Quarta<span>Manhã · 3 matérias</span></button>
+        </div>
+        <div class="ef-result" data-resultado aria-live="polite"></div>
+        <p class="ef-note">Cada seleção representa uma ausência naquele período. A simulação não altera as faltas registradas.</p>
+      </section>
+      <div class="ef-foot">A chamada não aceita arredondamento.</div>
+    </div>
+  </section>
+  <script>
+    (() => {
+      const root = document.getElementById('esboco-faltas-espm');
+      const app = root.querySelector('.ef-app');
+      const result = root.querySelector('[data-resultado]');
+      const initial = window.openai?.widgetState?.modelContent;
+      let selected = Array.isArray(initial?.periodos) ? initial.periodos.filter(d => ['ter','qua'].includes(d)) : ['ter'];
+      const subjects = [
+        { nome:'Direito Penal I', usadas:18, limite:20, dias:['ter','qua'] },
+        { nome:'Responsabilidade Civil', usadas:16, limite:18, dias:['ter'] },
+        { nome:'Direito das Coisas', usadas:4, limite:10, dias:['ter'] },
+        { nome:'Direito Empresarial II', usadas:10, limite:19, dias:['qua'] },
+        { nome:'Processo Civil I', usadas:10, limite:19, dias:['qua'] }
+      ];
+      function render() {
+        root.querySelectorAll('[data-dia]').forEach(button => button.setAttribute('aria-pressed', String(selected.includes(button.dataset.dia))));
+        const effects = subjects.map(m => ({ ...m, total:m.usadas + m.dias.filter(d => selected.includes(d)).length * 2 })).filter(m => m.total > m.usadas);
+        const exceeded = effects.filter(m => m.total > m.limite).length;
+        result.dataset.excede = String(exceeded > 0);
+        const heading = !effects.length ? 'Escolha um período para simular' : exceeded ? `${exceeded} matéria ultrapassa o limite` : 'A seleção cabe nos limites informados';
+        result.innerHTML = `<h4>${heading}</h4>` + effects.map(m => {
+          const state = m.total > m.limite ? `Excede em ${m.total - m.limite} faltas` : m.total === m.limite ? 'No limite' : `Saldo após: ${m.limite - m.total} faltas`;
+          return `<div class="ef-effect${m.total > m.limite ? ' ef-danger' : ''}">${m.nome}<strong>${m.usadas} → ${m.total} de ${m.limite} · ${state}</strong></div>`;
+        }).join('');
+      }
+      root.querySelectorAll('[data-dia]').forEach(button => button.addEventListener('click', () => {
+        const day = button.dataset.dia;
+        selected = selected.includes(day) ? selected.filter(d => d !== day) : [...selected, day];
+        render();
+        window.openai?.setWidgetState?.({ modelContent:{ periodos:selected, contexto:'Esboço com dados fictícios DR4A' }, privateContent:null })?.catch(() => {});
+      }));
+      window.addEventListener('openai:set_globals', event => {
+        const saved = event.detail?.globals?.widgetState?.modelContent;
+        if (Array.isArray(saved?.periodos)) { selected = saved.periodos.filter(d => ['ter','qua'].includes(d)); render(); }
+      });
+      render();
+      if (globalThis.Tweak) {
+        const design = { prioridade:'Saldo primeiro', descontraido:false };
+        const tweak = new Tweak({ container:app, onChange() {
+          root.querySelector('[data-saldo]').style.order = design.prioridade === 'Saldo primeiro' ? '0' : '1';
+          root.querySelector('[data-simulador]').style.order = design.prioridade === 'Saldo primeiro' ? '1' : '0';
+          root.querySelector('.ef-foot').style.order = '2';
+          root.querySelector('[data-tom]').textContent = design.descontraido ? 'Antes de negociar com o despertador, confira o saldo.' : 'Seu saldo, sem fazer conta de cabeça.';
+        }});
+        tweak.addSelect(design, 'prioridade', { label:'Destaque inicial', options:['Saldo primeiro','Simulação primeiro'] });
+        tweak.addToggle(design, 'descontraido', { label:'Tom mais brincalhão' });
+      }
+    })();
+  </script>
+</div>

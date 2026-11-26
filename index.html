@@ -1,83 +1,162 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calculadora de faltas</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2b4fd8">
+  <meta name="description" content="Escolha sua turma, registre suas faltas e veja em quais dias e turnos da semana ainda dá para faltar.">
+  <title>Saldo de faltas</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-<main>
-<h1>Calculadora de faltas</h1>
-<p class="muted">Cadastre as matérias, informe as faltas que você já tem, marque a grade e veja o resultado ao lado. Cada tempo de aula faltado conta como 2 faltas.</p>
+  <a class="pular" href="#passo1">Ir para o conteúdo</a>
 
-<div class="layout">
-
-  <div class="col">
-    <div class="scroll">
-      <div class="card">
-        <h2 style="margin-top:0">1. Template</h2>
-        <label for="template">Escolha uma configuração inicial:</label>
-        <select id="template">
-          <option value="grade-base">Template TI4A — 11 matérias</option>
-          <option value="ti2a">Template TI2A — 10 matérias</option>
-          <option value="direito-dr4a">Template Direito DR4A — 13 matérias</option>
-          <option value="vazio">Começar do zero</option>
-        </select>
-        <p class="muted">Ao trocar o template, os dados atuais da grade e das matérias serão substituídos.</p>
-      </div>
-
-      <div class="card">
-        <h2 style="margin-top:0">2. Matérias</h2>
-        <table>
-          <thead><tr><th>#</th><th>Nome</th><th>Já faltei (faltas)</th><th>Limite (faltas)</th></tr></thead>
-          <tbody id="materias"></tbody>
-        </table>
-        <p><button id="addMat">+ Adicionar matéria</button></p>
-        <p class="muted">Deixe o limite em branco para não limitar a matéria. As faltas já usadas descontam do limite.</p>
-      </div>
-
-      <div class="card">
-        <h2 style="margin-top:0">3. Grade da semana</h2>
-        <p class="muted">Marque as matérias que acontecem em cada período. Se naquele dia a matéria ocupa 2 tempos seguidos, marque "dobradinha" logo abaixo dela. Períodos sem marcação ficam só com o máximo deles.</p>
-        <table>
-          <thead><tr><th>Dia</th><th>Turno</th><th>Matérias</th></tr></thead>
-          <tbody id="grade"></tbody>
-        </table>
-      </div>
+  <header class="topo">
+    <div class="topo-interno">
+      <a class="marca" href="#passo1">
+        <span class="marca-selo" aria-hidden="true"></span>
+        Saldo de faltas
+      </a>
+      <p class="topo-estado" id="topoEstado"></p>
     </div>
-  </div>
+  </header>
 
-  <div class="col">
-    <div class="card sticky">
-      <h2 style="margin-top:0">4. Resultado</h2>
-      <div class="muted">Faltas que ainda podem ser usadas na semana</div>
-      <div class="big" id="total">-</div>
-      <div class="muted" id="totalTempo"></div>
-
-        <h2>Por período</h2>
-      <table>
-        <thead><tr><th>Dia</th><th>Faltas possíveis</th></tr></thead>
-        <tbody id="porDia"></tbody>
-      </table>
-
-      <h2>Por período</h2>
-      <table>
-        <thead><tr><th>Período</th><th>Matéria: faltas</th><th>Total</th></tr></thead>
-        <tbody id="porPeriodo"></tbody>
-      </table>
-
-      <h2>Uso dos limites</h2>
-      <table>
-        <thead><tr><th>Matéria</th><th>Já faltei</th><th>Limite</th><th>Ainda pode</th><th>Planejado</th></tr></thead>
-        <tbody id="usoMat"></tbody>
-      </table>
+  <main>
+    <div class="abertura">
+      <h1>Onde ainda dá para faltar?</h1>
+      <p class="sub">Três passos. Seus dados ficam neste navegador e a conta é feita aqui mesmo.</p>
     </div>
-  </div>
 
-</div>
-</main>
+    <ol class="passos">
+      <!-- Passo 1 ---------------------------------------------------------- -->
+      <li class="passo" id="passo1">
+        <div class="passo-cabeca">
+          <span class="passo-num" aria-hidden="true">1</span>
+          <div>
+            <h2>Escolha sua turma</h2>
+            <p class="sub">O template traz a grade da semana e os limites de cada matéria. Dá para ajustar tudo depois.</p>
+          </div>
+        </div>
 
-<script src="script.js"></script>
+        <div class="passo-corpo">
+          <div class="turma-escolha">
+            <label for="turma">Turma</label>
+            <select id="turma">
+              <option value="grade-base">TI4A — 11 matérias</option>
+              <option value="ti2a">TI2A — 10 matérias</option>
+              <option value="direito-dr4a">Direito DR4A — 13 matérias</option>
+              <option value="vazio">Montar a minha do zero</option>
+            </select>
+            <button class="btn btn-forte" id="trocarTurma" type="button">Usar esta turma</button>
+          </div>
+          <p class="nota-fraca">Trocar de turma apaga as matérias e as faltas que você já registrou.</p>
+          <p class="nota" id="notaTurma" hidden>No template de Direito, Responsabilidade Civil usa 18 faltas. A grade original também citava 20 — confirme com a sua turma.</p>
+
+          <details class="bloco" id="blocoGrade">
+            <summary>
+              <span class="bloco-titulo">Conferir a grade da semana</span>
+              <span class="bloco-sub">Quais matérias caem em cada turno, e quais são dobradinha.</span>
+            </summary>
+            <div class="bloco-corpo">
+              <p class="sub">Marque as matérias de cada turno. Dobradinha é quando a matéria ocupa dois tempos seguidos no mesmo dia.</p>
+              <div class="grade-editor" id="grade"></div>
+            </div>
+          </details>
+        </div>
+      </li>
+
+      <!-- Passo 2 ---------------------------------------------------------- -->
+      <li class="passo" id="passo2">
+        <div class="passo-cabeca">
+          <span class="passo-num" aria-hidden="true">2</span>
+          <div>
+            <h2>Registre suas faltas</h2>
+            <p class="sub">Copie do seu controle de frequência. Sem isso o passo 3 não tem o que calcular.</p>
+          </div>
+        </div>
+
+        <div class="passo-corpo">
+          <div class="primeiro-uso" id="primeiroUso" hidden>
+            <p id="primeiroUsoTexto"></p>
+            <button class="btn btn-forte" id="zerarPendentes" type="button">Ainda não faltei em nenhuma</button>
+          </div>
+
+          <p class="saldo-aperto" id="saldoAperto"></p>
+
+          <div class="ledger-cabecalho" aria-hidden="true">
+            <span>Matéria</span>
+            <span>Faltas usadas de limite</span>
+            <span>Ainda cabe</span>
+            <span></span>
+          </div>
+          <div class="ledger" id="ledger"></div>
+
+          <button class="btn btn-discreto" id="addMat" type="button">Adicionar matéria</button>
+        </div>
+      </li>
+
+      <!-- Passo 3 ---------------------------------------------------------- -->
+      <li class="passo" id="passo3">
+        <div class="passo-cabeca">
+          <span class="passo-num" aria-hidden="true">3</span>
+          <div>
+            <h2>Veja onde dá para faltar</h2>
+            <p class="sub">Escolha o tamanho do pedaço que você pensa em perder. Cada um mostra quantas vezes ainda cabe, e a cor acompanha o risco. Toque para testar: os outros recalculam, porque o saldo é compartilhado.</p>
+          </div>
+        </div>
+
+        <div class="passo-corpo">
+          <div class="resposta">
+            <aside class="trilha">
+              <fieldset class="gran-caixa">
+                <legend>Granularidade</legend>
+                <div id="granularidade"></div>
+              </fieldset>
+
+              <div class="legenda-caixa">
+                <p class="legenda-titulo">O que a cor diz</p>
+                <ul class="legenda" id="legenda"></ul>
+              </div>
+            </aside>
+
+            <div class="semana-area">
+              <div class="semana" id="semana" aria-label="A semana e quantas vezes cada parte dela ainda cabe"></div>
+              <div class="selecionados" id="selecionados"></div>
+              <div class="semana-rodape">
+                <p id="semanaNota"></p>
+                <button class="btn btn-texto" id="limpar" type="button" hidden>Limpar seleção</button>
+              </div>
+            </div>
+
+            <aside class="veredito" id="veredito" aria-live="polite" aria-atomic="true"></aside>
+          </div>
+
+          <details class="bloco" id="blocoPlano">
+            <summary>
+              <span class="bloco-titulo">Montar uma semana inteira que cabe</span>
+              <span class="bloco-sub">Uma combinação de turnos que usa o saldo sem estourar nenhum limite.</span>
+            </summary>
+            <div class="bloco-corpo">
+              <p class="sub">A conta não sabe quantas aulas ainda vão acontecer no semestre. Trate o resultado como teto, não como plano.</p>
+              <button class="btn btn-forte" id="gerarPlano" type="button">Montar combinação</button>
+              <div id="resultadoPlano" class="plano-resultado" aria-live="polite"></div>
+            </div>
+          </details>
+        </div>
+      </li>
+    </ol>
+  </main>
+
+  <footer class="rodape">
+    <p><strong>Como a conta funciona.</strong> Um tempo de aula perdido vale 2 faltas. Matéria em dobradinha ocupa dois tempos, então vale 4. O saldo é por matéria: faltas de matérias diferentes não se somam, e um mesmo turno gasta o saldo de todas as matérias daquele turno.</p>
+    <p id="statusSalvo">Seus dados ficam só neste navegador. Ninguém mais vê, e trocar de aparelho começa do zero.</p>
+    <p>Os limites vêm dos templates e podem estar desatualizados. Confirme no seu controle de frequência.</p>
+  </footer>
+
+  <noscript>
+    <p class="noscript">Esta página precisa de JavaScript para calcular o saldo.</p>
+  </noscript>
 </body>
 </html>
