@@ -9,7 +9,7 @@
 
 /* --- Tokens --------------------------------------------------------------- */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
   /* Cor */
   --papel:          #fcfcfa;
@@ -53,29 +53,32 @@
   --r-medio: 8px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --papel:          #12141a;
-    --papel-fundo:    #0c0e13;
-    --superficie:     #1a1e27;
-    --tinta:          #e9eaee;
-    --tinta-fraca:    #9ba2b2;
-    --linha:          #2b303b;
-    --linha-forte:    #3c4354;
+/* O tema vem do atributo data-tema, escrito pelo script do <head> antes da
+   primeira pintura. O sistema continua sendo o padrão: ele só decide enquanto
+   a pessoa não tiver escolhido. */
+:root[data-tema="escuro"] {
+  color-scheme: dark;
 
-    --caneta:         #87a2ff;
-    --caneta-fundo:   #1d2640;
-    --vermelho:       #ff897e;
-    --vermelho-fundo: #33201e;
-    --ambar:          #e5b15c;
-    --ambar-fundo:    #2e2614;
-    --verde:          #63c79c;
+  --papel:          #12141a;
+  --papel-fundo:    #0c0e13;
+  --superficie:     #1a1e27;
+  --tinta:          #e9eaee;
+  --tinta-fraca:    #9ba2b2;
+  --linha:          #2b303b;
+  --linha-forte:    #3c4354;
 
-    --risco-0: #ff897e;  --risco-0-fundo: #33201e;
-    --risco-1: #f5a65f;  --risco-1-fundo: #31220f;
-    --risco-2: #d9c25c;  --risco-2-fundo: #2b2712;
-    --risco-3: #63c79c;  --risco-3-fundo: #15291f;
-  }
+  --caneta:         #87a2ff;
+  --caneta-fundo:   #1d2640;
+  --vermelho:       #ff897e;
+  --vermelho-fundo: #33201e;
+  --ambar:          #e5b15c;
+  --ambar-fundo:    #2e2614;
+  --verde:          #63c79c;
+
+  --risco-0: #ff897e;  --risco-0-fundo: #33201e;
+  --risco-1: #f5a65f;  --risco-1-fundo: #31220f;
+  --risco-2: #d9c25c;  --risco-2-fundo: #2b2712;
+  --risco-3: #63c79c;  --risco-3-fundo: #15291f;
 }
 
 /* --- Base ----------------------------------------------------------------- */
@@ -167,7 +170,26 @@ a { color: inherit; }
     linear-gradient(var(--linha-forte) 0 0) 10px 0 / 3px 100% no-repeat,
     linear-gradient(var(--linha-forte) 0 0) 15px 0 / 3px 100% no-repeat;
 }
+.topo-direita { display: flex; align-items: center; gap: 0.75rem; }
 .topo-estado { font-size: var(--t-micro); color: var(--tinta-fraca); text-align: right; }
+
+.btn-tema {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  min-height: 2.25rem; padding: 0.35rem 0.7rem;
+  border: 1px solid var(--linha-forte); border-radius: 100px;
+  background: var(--superficie);
+  font-size: 0.75rem; font-weight: 600; color: var(--tinta-fraca);
+  white-space: nowrap;
+}
+.btn-tema:hover { border-color: var(--caneta); color: var(--caneta); }
+.btn-tema svg { width: 0.95rem; height: 0.95rem; flex-shrink: 0; }
+@media (max-width: 34rem) {
+  .btn-tema-texto {
+    position: absolute; width: 1px; height: 1px;
+    margin: -1px; overflow: hidden; clip-path: inset(50%);
+  }
+  .btn-tema { padding: 0.35rem 0.55rem; }
+}
 .topo-estado b { color: var(--tinta); font-weight: 600; }
 
 select, input[type="number"], input[type="text"] {
