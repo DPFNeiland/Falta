@@ -856,7 +856,6 @@ function renderEstado(){
 function recalcular(){ renderAperto(); renderPrimeiroUso(); renderSemana(); renderVeredito(); renderEstado(); }
 
 function renderTudo(){
-  el('notaTurma').hidden = templateAtual !== 'direito-dr4a';
   renderGranularidade(); renderLegenda();
   renderLedger(); renderGrade(); recalcular(); invalidarPlano();
 }
