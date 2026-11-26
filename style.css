@@ -120,14 +120,6 @@ a { color: inherit; }
   max-width: 54ch;
 }
 
-.nota {
-  font-size: var(--t-micro);
-  color: var(--ambar);
-  background: var(--ambar-fundo);
-  padding: 0.6rem 0.75rem;
-  border-radius: var(--r-medio);
-  max-width: 54ch;
-}
 
 /* --- Botões --------------------------------------------------------------- */
 .btn {
