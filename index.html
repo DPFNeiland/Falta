@@ -7,6 +7,18 @@
   <meta name="description" content="Escolha sua turma, registre suas faltas e veja em quais dias e turnos da semana ainda dá para faltar.">
   <title>Saldo de faltas</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script>
+    // Roda antes do CSS pintar: sem isto, quem usa tema escuro leva um flash
+    // branco a cada carregamento.
+    (function () {
+      var tema = 'claro';
+      try {
+        tema = localStorage.getItem('saldo.tema')
+          || (matchMedia('(prefers-color-scheme: dark)').matches ? 'escuro' : 'claro');
+      } catch (e) { /* navegador sem storage: segue no claro */ }
+      document.documentElement.dataset.tema = tema === 'escuro' ? 'escuro' : 'claro';
+    })();
+  </script>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
@@ -19,7 +31,10 @@
         <span class="marca-selo" aria-hidden="true"></span>
         Saldo de faltas
       </a>
-      <p class="topo-estado" id="topoEstado"></p>
+      <div class="topo-direita">
+        <p class="topo-estado" id="topoEstado"></p>
+        <button class="btn-tema" id="tema" type="button"></button>
+      </div>
     </div>
   </header>
 

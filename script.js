@@ -787,6 +787,57 @@ function invalidarPlano(){
 }
 
 /* ==========================================================================
+   Tema
+
+   O rótulo do botão diz o que acontece ao usá-lo, não o estado atual — "Modo
+   escuro" leva ao escuro. Estado atual quem conta é a tela.
+   ========================================================================== */
+
+const TEMA_KEY = 'saldo.tema';
+const prefereEscuro = matchMedia('(prefers-color-scheme: dark)');
+
+const SOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">' +
+  '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const LUA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+
+function temaAtual(){
+  return document.documentElement.dataset.tema === 'escuro' ? 'escuro' : 'claro';
+}
+
+function renderTema(){
+  const vaiPara = temaAtual() === 'escuro' ? 'claro' : 'escuro';
+  const texto = vaiPara === 'escuro' ? 'Modo escuro' : 'Modo claro';
+  el('tema').innerHTML = (vaiPara === 'escuro' ? LUA : SOL) +
+    '<span class="btn-tema-texto">' + texto + '</span>';
+  el('tema').setAttribute('aria-label', 'Mudar para o ' + texto.toLowerCase());
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', temaAtual() === 'escuro' ? '#12141a' : '#2b4fd8');
+}
+
+function aplicarTema(tema, escolhido){
+  document.documentElement.dataset.tema = tema === 'escuro' ? 'escuro' : 'claro';
+  if (escolhido) { try { localStorage.setItem(TEMA_KEY, tema); } catch { /* sem storage */ } }
+  renderTema();
+}
+
+function temaFoiEscolhido(){
+  try { return localStorage.getItem(TEMA_KEY) !== null; } catch { return false; }
+}
+
+el('tema').addEventListener('click', () => {
+  aplicarTema(temaAtual() === 'escuro' ? 'claro' : 'escuro', true);
+});
+
+/* Enquanto a pessoa não escolher, o sistema continua mandando — inclusive se
+   ele trocar sozinho ao anoitecer. */
+prefereEscuro.addEventListener('change', e => {
+  if (!temaFoiEscolhido()) aplicarTema(e.matches ? 'escuro' : 'claro', false);
+});
+
+renderTema();
+
+/* ==========================================================================
    Render e eventos
    ========================================================================== */
 
