@@ -552,7 +552,9 @@ function renderSemana(){
           '</button>';
         }).join('')
       : '<div class="aula-vazia"><small>sem aula</small></div>';
-    return '<div class="dia"><span class="dia-nome">' + dia + '</span><div class="dia-unidades">' + corpo + '</div></div>';
+    return '<div class="dia">' +
+      '<span class="dia-nome">' + dia + '</span>' +
+      '<div class="dia-unidades">' + corpo + '</div></div>';
   }).join('');
 
   renderSelecionados();
@@ -1018,10 +1020,28 @@ el('limpar').addEventListener('click', () => {
   el('semana').querySelector('button')?.focus({preventScroll: true});
 });
 
+/* A grade muda de estrutura entre as granularidades. Animar as dimensões de
+   cada dia estica os snapshots dos cards, principalmente ao abrir "Tempo por
+   tempo". A troca revela apenas o novo conteúdo por opacidade. */
+function aplicarGranularidade(valor){
+  const redesenhar = () => { renderSemana(); renderVeredito(); };
+  granularidade = valor;
+
+  const semMovimento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  redesenhar();
+  if (!semMovimento && typeof el('semana').animate === 'function') {
+    el('semana').animate(
+      [{opacity: 0.35}, {opacity: 1}],
+      {duration: 180, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)'}
+    );
+  }
+
+  salvar();
+}
+
 el('granularidade').addEventListener('change', e => {
   if (e.target.name !== 'gran' || !Object.hasOwn(GRANULARIDADES, e.target.value)) return;
-  granularidade = e.target.value;
-  renderSemana(); renderVeredito(); salvar();
+  aplicarGranularidade(e.target.value);
 });
 
 el('gerarPlano').addEventListener('click', montarPlano);

@@ -570,7 +570,7 @@ main { max-width: var(--largura); margin: 0 auto; padding: 0 var(--gutter); }
   .semana[data-gran="turno"] .dia-unidades { grid-template-columns: 1fr; }
   /* Linha desalinhada numa grade de horário mente: parece que a tarde de um
      dia começa noutra hora. Altura igual entre as colunas resolve. */
-  .semana[data-gran="tempo"] .aula { min-height: 7.5rem; justify-content: flex-start; }
+  .semana[data-gran="tempo"] .aula { justify-content: flex-start; }
   .semana[data-gran="tempo"] .aula-materia { min-height: 2.6em; }
   .semana[data-gran="tempo"] .aula-num { margin-top: auto; }
   .dia-nome { justify-content: center; }
@@ -619,6 +619,36 @@ main { max-width: var(--largura); margin: 0 auto; padding: 0 var(--gutter); }
   .opcao-gran label small { display: none; }
   .legenda { grid-auto-flow: row; grid-template-columns: 1fr 1fr; }
 }
+
+/* --- Transição entre granularidades ---------------------------------------
+   A coluna do dia é a mesma nos três recortes, então ela morfa de altura
+   enquanto o conteúdo troca: o dia se subdivide, não pisca.
+
+   O cross-fade padrão sobrepõe os dois conteúdos, e texto sobre texto vira
+   borrão. Por isso o antigo sai primeiro e o novo entra depois, enquanto a
+   moldura da coluna segue morfando por baixo dos dois. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(*) {
+    animation-duration: 300ms;
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  ::view-transition-old(*) {
+    animation: vt-sai 110ms cubic-bezier(0.4, 0, 1, 1) both;
+    mix-blend-mode: normal;
+  }
+  ::view-transition-new(*) {
+    animation: vt-entra 190ms cubic-bezier(0, 0, 0.2, 1) 110ms both;
+    mix-blend-mode: normal;
+  }
+
+  /* O root fica de fora: só as colunas animam. Deixá-lo fazer cross-fade
+     transforma a troca num fantasma de página inteira. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+}
+
+@keyframes vt-sai   { to   { opacity: 0; } }
+@keyframes vt-entra { from { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
